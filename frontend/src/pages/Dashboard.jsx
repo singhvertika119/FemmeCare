@@ -15,7 +15,7 @@ const Dashboard = () => {
             headers: { Authorization: `Bearer ${user.token}` }
           });
           const data = await res.json();
-          setAppointments(data);
+          setAppointments(data.filter(apt => new Date(apt.date).getTime() >= Date.now() - (60 * 60 * 1000)));
         } catch (error) {
           console.error("Error fetching", error);
         } finally {
@@ -40,6 +40,25 @@ const Dashboard = () => {
           This is your highly secure, encrypted portal. We're here for you.
         </p>
       </div>
+
+      {/* 24-Hour Reminder Visual Alert Banner */}
+      {appointments.some(apt => {
+         const aptTime = new Date(apt.date).getTime();
+         const now = Date.now();
+         return aptTime > now && aptTime < now + (24 * 60 * 60 * 1000);
+      }) && (
+         <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg shadow-sm mb-8 animate-pulse">
+            <div className="flex items-center gap-3">
+               <div className="bg-amber-100 p-2 rounded-full text-amber-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+               </div>
+               <div>
+                  <h3 className="text-amber-800 font-bold">Urgent Calendar Notice</h3>
+                  <p className="text-amber-700 text-sm">You have a secure medical consultation scheduled within the next <span className="font-bold">24 hours</span>. Please ensure you are prepared to join.</p>
+               </div>
+            </div>
+         </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Appointments Section */}

@@ -45,7 +45,7 @@ const SearchSpecialists = () => {
         },
         body: JSON.stringify({
           doctorId,
-          date: new Date().toISOString(), // Mocking to today
+          date: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // Mocking securely to 2 hours from now
           timeSlot: '10:00 AM',
           reason: 'General Checkup',
           appointmentType: type

@@ -21,4 +21,6 @@ app.get('/', (req, res) => res.send('FemmeCare API Running'));
 
 const PORT = process.env.PORT || 5000;
 
+require('./jobs/reminderJob')();
+
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
