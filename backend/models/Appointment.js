@@ -24,6 +24,14 @@ const AppointmentSchema = new mongoose.Schema({
     enum: ['Scheduled', 'Completed', 'Cancelled'],
     default: 'Scheduled'
   },
+  appointmentType: {
+    type: String,
+    enum: ['In-Person', 'Video Call'],
+    default: 'In-Person'
+  },
+  videoLink: {
+    type: String
+  },
   reason: {
     type: String
   }

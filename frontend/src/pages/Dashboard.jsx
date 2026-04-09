@@ -64,7 +64,20 @@ const Dashboard = () => {
                       {user.role === 'Patient' ? (apt.doctor?.name ? `Dr. ${apt.doctor.name}` : 'Unknown Doctor') : (apt.patient?.name || 'Unknown Patient')}
                     </p>
                     <p className="text-brand-teal text-sm mt-1">{new Date(apt.date).toLocaleDateString()} at {apt.timeSlot}</p>
-                    <p className="text-gray-500 text-sm mt-2">Status: <span className="font-medium text-gray-700">{apt.status}</span></p>
+                    <p className="text-gray-500 text-sm mt-2">
+                       Status: <span className="font-medium text-gray-700">{apt.status}</span> 
+                       <span className="mx-2">&bull;</span>
+                       <span className="font-medium text-brand-teal">{apt.appointmentType || 'In-Person'}</span>
+                    </p>
+                    
+                    {apt.appointmentType === 'Video Call' && apt.videoLink && (
+                       <div className="mt-4 pt-3 border-t border-brand-lavender">
+                         <Link to={`/call/${apt.videoLink.split('/room/')[1]}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-brand-teal text-white px-5 py-2 rounded-lg hover:bg-brand-teal/90 transition text-sm font-medium">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+                            Join Video Call
+                         </Link>
+                       </div>
+                    )}
                  </div>
               ))}
             </div>

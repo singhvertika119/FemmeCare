@@ -1,4 +1,4 @@
-import { CalendarPlus, Star } from 'lucide-react';
+import { CalendarPlus, Star, Video } from 'lucide-react';
 
 const DoctorCard = ({ doctor, onBook }) => {
   return (
@@ -16,17 +16,26 @@ const DoctorCard = ({ doctor, onBook }) => {
             </div>
           </div>
           <p className="text-brand-teal text-sm font-medium mb-2">{doctor.specialty}</p>
-          <p className="text-gray-600 text-sm line-clamp-3">
+          <p className="text-gray-600 text-sm line-clamp-3 mb-4">
             {doctor.bio || 'Dedicated to providing a safe, comfortable, and comprehensive care experience for all women.'}
           </p>
 
-          <button 
-            onClick={onBook}
-            className="mt-4 w-full bg-brand-teal/10 text-brand-teal font-medium py-2 rounded-lg hover:bg-brand-teal hover:text-white transition flex items-center justify-center gap-2"
-          >
-             <CalendarPlus size={18} />
-             Book Appointment
-          </button>
+          <div className="flex flex-col gap-2">
+            <button 
+              onClick={() => onBook('In-Person')}
+              className="w-full bg-brand-teal/10 text-brand-teal font-medium py-2 rounded-lg hover:bg-brand-teal hover:text-white transition flex items-center justify-center gap-2"
+            >
+               <CalendarPlus size={18} />
+               In-Person Consult
+            </button>
+            <button 
+              onClick={() => onBook('Video Call')}
+              className="w-full bg-brand-lavender text-brand-teal font-medium py-2 rounded-lg hover:bg-brand-teal hover:text-white transition flex items-center justify-center gap-2"
+            >
+               <Video size={18} />
+               Video Consult
+            </button>
+          </div>
         </div>
       </div>
     </div>

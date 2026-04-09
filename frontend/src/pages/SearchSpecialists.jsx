@@ -27,7 +27,7 @@ const SearchSpecialists = () => {
     fetchDoctors();
   }, []);
 
-  const handleBook = async (doctorId) => {
+  const handleBook = async (doctorId, type) => {
     if (!user) {
       navigate('/login');
       return;
@@ -47,7 +47,8 @@ const SearchSpecialists = () => {
           doctorId,
           date: new Date().toISOString(), // Mocking to today
           timeSlot: '10:00 AM',
-          reason: 'General Checkup'
+          reason: 'General Checkup',
+          appointmentType: type
         })
       });
 
@@ -91,7 +92,7 @@ const SearchSpecialists = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {doctors.map(doctor => (
-            <DoctorCard key={doctor._id} doctor={doctor} onBook={() => handleBook(doctor._id)} />
+            <DoctorCard key={doctor._id} doctor={doctor} onBook={(type) => handleBook(doctor._id, type)} />
           ))}
         </div>
       )}

@@ -29,15 +29,27 @@ const getDoctors = async (req, res) => {
 // @route   POST /api/appointments
 // @access  Private (Patient only)
 const bookAppointment = async (req, res) => {
-  const { doctorId, date, timeSlot, reason } = req.body;
+  const { doctorId, date, timeSlot, reason, appointmentType } = req.body;
 
   try {
+    const type = appointmentType || 'In-Person';
+    let videoLink = undefined;
+    
+    // For Mongoose Object IDs we can just generate a random string or wait for the ID
+    // Since we don't have the _id yet, we use a random mock hash representing the meeting room
+    if (type === 'Video Call') {
+       const mockRoomHash = Math.random().toString(36).substring(2, 10);
+       videoLink = `https://meet.femmecare.com/room/${mockRoomHash}`;
+    }
+
     const appointment = await Appointment.create({
       patient: req.user.id,
       doctor: doctorId,
       date,
       timeSlot,
-      reason
+      reason,
+      appointmentType: type,
+      videoLink
     });
     res.status(201).json(appointment);
   } catch (error) {
