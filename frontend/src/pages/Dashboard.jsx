@@ -26,6 +26,26 @@ const Dashboard = () => {
     }
   }, [user]);
 
+  const handleCancel = async (id) => {
+    if (window.confirm("Are you sure you want to cancel this secure medical appointment?")) {
+      try {
+        const res = await fetch(`http://localhost:5000/api/appointments/${id}/cancel`, {
+          method: 'PATCH',
+          headers: { Authorization: `Bearer ${user.token}` }
+        });
+        if (res.ok) {
+           // Live reactive update mutating layout instantly without full-page reloads
+           setAppointments(prev => prev.map(apt => apt._id === id ? { ...apt, status: 'Cancelled' } : apt));
+        } else {
+           const errData = await res.json();
+           alert(errData.message || 'Action Blocked.');
+        }
+      } catch (error) {
+         alert('Network connection error.');
+      }
+    }
+  };
+
   if (!user) {
     return <Navigate to="/login" />;
   }
@@ -95,6 +115,17 @@ const Dashboard = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
                             Join Video Call
                          </Link>
+                       </div>
+                    )}
+
+                    {apt.status === 'Scheduled' && user.role === 'Patient' && (
+                       <div className="mt-4 pt-3 border-t border-brand-lavender">
+                         <button 
+                            onClick={() => handleCancel(apt._id)} 
+                            className="inline-flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition text-sm font-medium border border-red-100 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                            Cancel Appointment
+                         </button>
                        </div>
                     )}
                  </div>

@@ -1,4 +1,4 @@
-import { CalendarPlus, Star, Video } from 'lucide-react';
+import { CalendarPlus, Star, Video, MapPin } from 'lucide-react';
 
 const DoctorCard = ({ doctor, onBook }) => {
   return (
@@ -12,10 +12,19 @@ const DoctorCard = ({ doctor, onBook }) => {
             <h3 className="font-bold text-lg text-gray-800">Dr. {doctor.name}</h3>
             <div className="flex items-center text-amber-500 text-sm font-medium">
                <Star size={14} className="fill-current mr-1" />
-               5.0
+               {doctor.averageRating ? doctor.averageRating.toFixed(1) : '5.0'} 
+               <span className="text-gray-400 ml-1 font-normal opacity-75">({doctor.totalReviews || 0} reviews)</span>
             </div>
           </div>
-          <p className="text-brand-teal text-sm font-medium mb-2">{doctor.specialty}</p>
+          <p className="text-brand-teal text-sm font-medium mb-1">{doctor.specialty}</p>
+
+          {/* Securely inject physical location mapping below specialty implicitly */}
+          {doctor.clinicAddress && (
+             <p className="flex items-start gap-1 text-gray-500 text-xs mb-2 leading-relaxed pr-2">
+                <MapPin size={13} className="min-w-[13px] mt-[1px] text-brand-lavender/80" />
+                {doctor.clinicAddress}
+             </p>
+          )}
           <p className="text-gray-600 text-sm line-clamp-3 mb-4">
             {doctor.bio || 'Dedicated to providing a safe, comfortable, and comprehensive care experience for all women.'}
           </p>

@@ -2,9 +2,9 @@ const Appointment = require('../models/Appointment');
 const User = require('../models/User');
 
 const seedDoctors = [
-  { name: 'Sarah Jenkins', email: 'sarah@femmecare.com', password: 'password', specialty: 'Obstetrician/Gynecologist', bio: 'Expert in maternal-fetal medicine and high-risk pregnancies.', role: 'Doctor' },
-  { name: 'Emily Chen', email: 'emily@femmecare.com', password: 'password', specialty: 'Gynecologist', bio: 'Specializes in minimally invasive surgery and preventive care.', role: 'Doctor' },
-  { name: 'Aisha Patel', email: 'aisha@femmecare.com', password: 'password', specialty: 'Reproductive Endocrinologist', bio: 'Focused on fertility treatments and hormonal imbalances.', role: 'Doctor' }
+  { name: 'Sarah Jenkins', email: 'sarah@femmecare.com', password: 'password', specialty: 'Obstetrician/Gynecologist', bio: 'Expert in maternal-fetal medicine and high-risk pregnancies.', role: 'Doctor', phoneNumber: '555-102-1928', clinicAddress: '100 Medical Plaza, New York, NY', averageRating: 4.9, totalReviews: 124 },
+  { name: 'Emily Chen', email: 'emily@femmecare.com', password: 'password', specialty: 'Gynecologist', bio: 'Specializes in minimally invasive surgery and preventive care.', role: 'Doctor', phoneNumber: '555-304-9812', clinicAddress: '240 Wellness Blvd, Los Angeles, CA', averageRating: 4.8, totalReviews: 89 },
+  { name: 'Aisha Patel', email: 'aisha@femmecare.com', password: 'password', specialty: 'Reproductive Endocrinologist', bio: 'Focused on fertility treatments and hormonal imbalances.', role: 'Doctor', phoneNumber: '555-881-2290', clinicAddress: '78 Fertility Ave, Chicago, IL', averageRating: 5.0, totalReviews: 210 }
 ];
 
 // @desc    Get all doctors (mocked with DB fallback)
@@ -25,6 +25,58 @@ const getDoctors = async (req, res) => {
   }
 };
 
+// @desc    Get doctor's slots for a specific date
+// @route   GET /api/appointments/doctors/:id/slots?date=YYYY-MM-DD
+// @access  Private
+const getDoctorSlots = async (req, res) => {
+  const { id } = req.params;
+  const { date } = req.query; // strict YYYY-MM-DD
+
+  try {
+    const doctor = await User.findById(id);
+    if (!doctor || doctor.role !== 'Doctor') {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    const { start, end, slotDuration } = doctor.workingHours || { start: '09:00', end: '17:00', slotDuration: 30 };
+    
+    // Parse mathematical grid matrices
+    const startParts = start.split(':');
+    const endParts = end.split(':');
+    
+    let currentSlot = new Date(1970, 0, 1, parseInt(startParts[0]), parseInt(startParts[1]));
+    const endTime = new Date(1970, 0, 1, parseInt(endParts[0]), parseInt(endParts[1]));
+
+    const possibleSlots = [];
+    while (currentSlot < endTime) {
+      // Structure format string cleanly
+      const timeString = currentSlot.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      possibleSlots.push(timeString);
+      currentSlot = new Date(currentSlot.getTime() + slotDuration * 60000);
+    }
+
+    // Interrogate existing database footprint avoiding overlapping
+    const existingAppointments = await Appointment.find({
+      doctor: id,
+      date,
+      status: { $ne: 'Cancelled' }
+    });
+
+    const bookedSlotStrings = existingAppointments.map(app => app.timeSlot);
+
+    // Merge validation matrix
+    const slots = possibleSlots.map(time => ({
+      time,
+      isBooked: bookedSlotStrings.includes(time)
+    }));
+
+    res.json(slots);
+  } catch (error) {
+    console.error("Slot Mapping Error", error);
+    res.status(500).json({ message: 'Server logic failed while computing slots' });
+  }
+};
+
 // @desc    Book a new appointment
 // @route   POST /api/appointments
 // @access  Private (Patient only)
@@ -40,6 +92,18 @@ const bookAppointment = async (req, res) => {
     if (type === 'Video Call') {
        const mockRoomHash = Math.random().toString(36).substring(2, 10);
        videoLink = `https://meet.femmecare.com/room/${mockRoomHash}`;
+    }
+
+    // Defensive collision rejection block
+    const existingConflict = await Appointment.findOne({
+      doctor: doctorId,
+      date,
+      timeSlot,
+      status: { $ne: 'Cancelled' }
+    });
+
+    if (existingConflict) {
+      return res.status(400).json({ message: 'Apologies. This specific time slot was just booked by another patient.' });
     }
 
     const appointment = await Appointment.create({
@@ -76,8 +140,36 @@ const getMyAppointments = async (req, res) => {
   }
 };
 
+// @desc    Cancel an appointment safely
+// @route   PATCH /api/appointments/:id/cancel
+// @access  Private (Patient only)
+const cancelAppointment = async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+    
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    // Validate ownership strictly
+    if (appointment.patient.toString() !== req.user.id) {
+       return res.status(401).json({ message: 'User not authorized to cancel this particular appointment.' });
+    }
+
+    appointment.status = 'Cancelled';
+    const updatedAppointment = await appointment.save();
+
+    res.json(updatedAppointment);
+  } catch (error) {
+    console.error("Cancellation Error", error);
+    res.status(500).json({ message: 'Critical error rendering cancellation.' });
+  }
+};
+
 module.exports = {
   getDoctors,
+  getDoctorSlots,
   bookAppointment,
-  getMyAppointments
+  getMyAppointments,
+  cancelAppointment
 };

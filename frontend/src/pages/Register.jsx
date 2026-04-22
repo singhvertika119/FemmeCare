@@ -9,7 +9,9 @@ const Register = () => {
     email: '',
     password: '',
     role: 'Patient',
-    specialty: ''
+    specialty: '',
+    phoneNumber: '',
+    clinicAddress: ''
   });
   const [error, setError] = useState('');
   const { login } = useContext(AuthContext);
@@ -105,17 +107,45 @@ const Register = () => {
           </div>
 
           {formData.role === 'Doctor' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Specialty</label>
-              <input 
-                type="text" 
-                name="specialty"
-                required={formData.role === 'Doctor'}
-                value={formData.specialty}
-                onChange={handleChange}
-                className="mt-1 w-full px-4 py-2 border border-brand-lavender rounded-lg outline-none"
-                placeholder="e.g. OB/GYN"
-              />
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Specialty</label>
+                <input 
+                  type="text" 
+                  name="specialty"
+                  required={formData.role === 'Doctor'}
+                  value={formData.specialty}
+                  onChange={handleChange}
+                  className="mt-1 w-full px-4 py-2 border border-brand-lavender rounded-lg outline-none focus:ring-2 focus:ring-brand-teal/50 transition"
+                  placeholder="e.g. OB/GYN"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Clinic Phone Number</label>
+                <input 
+                  type="text" 
+                  name="phoneNumber"
+                  required={formData.role === 'Doctor'}
+                  minLength={10}
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  className="mt-1 w-full px-4 py-2 border border-brand-lavender rounded-lg outline-none focus:ring-2 focus:ring-brand-teal/50 transition"
+                  placeholder="e.g. 555-102-1928"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Clinic Physical Address</label>
+                <input 
+                  type="text" 
+                  name="clinicAddress"
+                  required={formData.role === 'Doctor'}
+                  minLength={5}
+                  value={formData.clinicAddress}
+                  onChange={handleChange}
+                  className="mt-1 w-full px-4 py-2 border border-brand-lavender rounded-lg outline-none focus:ring-2 focus:ring-brand-teal/50 transition"
+                  placeholder="e.g. 100 Medical Plaza, NY"
+                />
+              </div>
             </div>
           )}
 

@@ -33,10 +33,27 @@ const UserSchema = new mongoose.Schema({
   bio: {
     type: String
   },
-  availability: [{
-    day: String,
-    slots: [String]
-  }]
+  workingHours: {
+    start: { type: String, default: '09:00' },
+    end: { type: String, default: '17:00' },
+    slotDuration: { type: Number, default: 30 }
+  },
+  phoneNumber: {
+    type: String,
+    required: function() { return this.role === 'Doctor'; }
+  },
+  clinicAddress: {
+    type: String,
+    required: function() { return this.role === 'Doctor'; }
+  },
+  averageRating: {
+    type: Number,
+    default: 0
+  },
+  totalReviews: {
+    type: Number,
+    default: 0
+  }
 }, { timestamps: true });
 
 // Hash password before saving

@@ -12,7 +12,7 @@ const AppointmentSchema = new mongoose.Schema({
     required: true
   },
   date: {
-    type: Date,
+    type: String, // Stored strictly as YYYY-MM-DD
     required: true
   },
   timeSlot: {

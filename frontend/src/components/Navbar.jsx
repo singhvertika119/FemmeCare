@@ -22,13 +22,21 @@ const Navbar = () => {
           </Link>
           
           <div className="flex items-center gap-4">
-            <Link to="/search" className="text-gray-600 hover:text-brand-teal font-medium transition">
-              Find a Doctor
-            </Link>
+            {user?.role === 'Doctor' ? (
+               <>
+                 <Link to="/doctor-dashboard" className="text-gray-600 hover:text-brand-teal font-medium transition">My Schedule</Link>
+                 <Link to="/doctor/slots" className="text-gray-600 hover:text-brand-teal font-medium transition">Manage Time Slots</Link>
+                 <Link to="/doctor/patients" className="text-gray-600 hover:text-brand-teal font-medium transition">Patient Records</Link>
+               </>
+            ) : (
+               <Link to="/search" className="text-gray-600 hover:text-brand-teal font-medium transition">
+                 Find a Doctor
+               </Link>
+            )}
             
             {user ? (
               <div className="flex items-center gap-4 ml-4 pl-4 border-l border-brand-lavender">
-                <Link to="/dashboard" className="flex items-center gap-2 text-gray-700 hover:text-brand-teal transition">
+                <Link to={user.role === 'Doctor' ? "/doctor-dashboard" : "/dashboard"} className="flex items-center gap-2 text-gray-700 hover:text-brand-teal transition">
                   <UserCircle size={20} />
                   <span className="font-medium">{user.name}</span>
                 </Link>

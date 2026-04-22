@@ -12,7 +12,7 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res) => {
-  const { name, email, password, role, specialty } = req.body;
+  const { name, email, password, role, specialty, phoneNumber, clinicAddress } = req.body;
 
   try {
     // Check if user exists
@@ -23,8 +23,10 @@ const registerUser = async (req, res) => {
     }
 
     // Role-specific validation
-    if (role === 'Doctor' && !specialty) {
-      return res.status(400).json({ message: 'Specialty is required for doctors' });
+    if (role === 'Doctor') {
+      if (!specialty) return res.status(400).json({ message: 'Specialty is required for doctors' });
+      if (!phoneNumber) return res.status(400).json({ message: 'A physical clinic phone number is required.' });
+      if (!clinicAddress) return res.status(400).json({ message: 'A physical clinic address is required.' });
     }
 
     // Create user
@@ -33,7 +35,9 @@ const registerUser = async (req, res) => {
       email,
       password,
       role: role || 'Patient',
-      specialty: role === 'Doctor' ? specialty : undefined
+      specialty: role === 'Doctor' ? specialty : undefined,
+      phoneNumber: role === 'Doctor' ? phoneNumber : undefined,
+      clinicAddress: role === 'Doctor' ? clinicAddress : undefined
     });
 
     if (user) {
