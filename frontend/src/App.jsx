@@ -11,6 +11,7 @@ import VideoCall from './pages/VideoCall';
 import ManageTimeSlots from './pages/ManageTimeSlots';
 import PatientRecords from './pages/PatientRecords';
 import DoctorDashboard from './pages/DoctorDashboard';
+import DoctorProfile from './pages/DoctorProfile';
 import DoctorRoute from './components/DoctorRoute';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 
@@ -39,6 +40,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/search" element={<SearchSpecialists />} />
+            <Route path="/doctor/:id" element={<DoctorProfile />} />
             
             {/* Protected strictly for Doctor Role natively via Wrapper */}
             <Route element={<DoctorRoute />}>

@@ -1,4 +1,5 @@
-import { CalendarPlus, Star, Video, MapPin } from 'lucide-react';
+import { CalendarPlus, Star, Video, MapPin, UserSquare } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const DoctorCard = ({ doctor, onBook }) => {
   return (
@@ -29,7 +30,16 @@ const DoctorCard = ({ doctor, onBook }) => {
             {doctor.bio || 'Dedicated to providing a safe, comfortable, and comprehensive care experience for all women.'}
           </p>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 mt-2">
+            <Link 
+              to={`/doctor/${doctor._id}`} 
+              state={{ doctor }}
+              className="w-full bg-brand-roseWhite text-brand-teal font-medium py-2 rounded-lg hover:bg-brand-roseWhite/70 transition flex items-center justify-center gap-2 border border-brand-lavender mb-2"
+            >
+               <UserSquare size={18} />
+               View Full Profile & Reviews
+            </Link>
+            
             <button 
               onClick={() => onBook('In-Person')}
               className="w-full bg-brand-teal/10 text-brand-teal font-medium py-2 rounded-lg hover:bg-brand-teal hover:text-white transition flex items-center justify-center gap-2"

@@ -1,11 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Navigate, Link } from 'react-router-dom';
+import ReviewModal from '../components/ReviewModal';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeReviewModal, setActiveReviewModal] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -15,7 +17,9 @@ const Dashboard = () => {
             headers: { Authorization: `Bearer ${user.token}` }
           });
           const data = await res.json();
-          setAppointments(data.filter(apt => new Date(apt.date).getTime() >= Date.now() - (60 * 60 * 1000)));
+          // By mounting the raw payload reversed, users can always securely view their history
+          // including 'Completed' variants which trigger the new Review modal.
+          setAppointments(data.reverse());
         } catch (error) {
           console.error("Error fetching", error);
         } finally {
@@ -44,6 +48,11 @@ const Dashboard = () => {
          alert('Network connection error.');
       }
     }
+  };
+
+  const handleReviewSuccess = (id, rating) => {
+    // Dynamic replacement injecting badge visibility bypassing refresh loops
+    setAppointments(prev => prev.map(apt => apt._id === id ? { ...apt, hasReviewed: true, givenRating: rating } : apt));
   };
 
   if (!user) {
@@ -83,7 +92,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Appointments Section */}
         <div className="bg-white rounded-2xl shadow-sm border border-brand-lavender p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Upcoming Appointments</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Your Appointments</h2>
           {loading ? (
              <div className="text-center py-6 text-gray-500">Loading schedules...</div>
           ) : appointments.length === 0 ? (
@@ -128,6 +137,27 @@ const Dashboard = () => {
                          </button>
                        </div>
                     )}
+
+                    {/* NEW REVIEW LOGIC */}
+                    {apt.status === 'Completed' && user.role === 'Patient' && !apt.hasReviewed && (
+                       <div className="mt-4 pt-3 border-t border-brand-lavender">
+                         <button 
+                            onClick={() => setActiveReviewModal(apt)} 
+                            className="inline-flex items-center gap-2 bg-brand-teal/10 text-brand-teal px-4 py-2 rounded-lg hover:bg-brand-teal hover:text-white transition text-sm font-medium border border-brand-lavender shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            Leave a Review
+                         </button>
+                       </div>
+                    )}
+
+                    {apt.status === 'Completed' && user.role === 'Patient' && apt.hasReviewed && (
+                       <div className="mt-4 pt-3 border-t border-brand-lavender">
+                         <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-bold border border-green-200 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            Rated: {apt.givenRating}
+                         </span>
+                       </div>
+                    )}
                  </div>
               ))}
             </div>
@@ -153,6 +183,15 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Interactive Evaluation Overlay */}
+      {activeReviewModal && (
+         <ReviewModal 
+            appointment={activeReviewModal} 
+            onClose={() => setActiveReviewModal(null)} 
+            onSuccess={handleReviewSuccess} 
+         />
+      )}
     </div>
   );
 };

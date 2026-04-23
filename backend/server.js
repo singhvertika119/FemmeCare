@@ -16,11 +16,13 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
 app.use('/api/appointments', require('./routes/appointmentRoutes'));
+app.use('/api/doctors', require('./routes/reviewRoutes'));
 
 app.get('/', (req, res) => res.send('FemmeCare API Running'));
 
 const PORT = process.env.PORT || 5000;
 
 require('./jobs/reminderJob')();
+require('./jobs/autoCompleteJob')();
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
