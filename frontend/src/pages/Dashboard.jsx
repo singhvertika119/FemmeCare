@@ -13,7 +13,7 @@ const Dashboard = () => {
     if (user) {
       const fetchAppointments = async () => {
         try {
-          const res = await fetch('http://localhost:5000/api/appointments/mine', {
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments/mine`, {
             headers: { Authorization: `Bearer ${user.token}` }
           });
           const data = await res.json();
@@ -33,7 +33,7 @@ const Dashboard = () => {
   const handleCancel = async (id) => {
     if (window.confirm("Are you sure you want to cancel this secure medical appointment?")) {
       try {
-        const res = await fetch(`http://localhost:5000/api/appointments/${id}/cancel`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments/${id}/cancel`, {
           method: 'PATCH',
           headers: { Authorization: `Bearer ${user.token}` }
         });

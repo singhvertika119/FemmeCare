@@ -13,7 +13,7 @@ const PatientRecords = () => {
     if (user) {
       const fetchPatients = async () => {
         try {
-          const res = await fetch('http://localhost:5000/api/doctors/my-patients', {
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/doctors/my-patients`, {
             headers: { Authorization: `Bearer ${user.token}` }
           });
           const data = await res.json();

@@ -26,7 +26,7 @@ const ReviewModal = ({ appointment, onClose, onSuccess }) => {
     const doctorId = appointment.doctor?._id || appointment.doctor;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/doctors/${doctorId}/reviews`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/doctors/${doctorId}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

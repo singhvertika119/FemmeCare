@@ -14,7 +14,7 @@ const BookingModal = ({ doctorId, doctorName, bookingType, onClose, onConfirm })
       const fetchSlots = async () => {
         setLoading(true);
         try {
-          const res = await fetch(`http://localhost:5000/api/appointments/doctors/${doctorId}/slots?date=${date}`, {
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments/doctors/${doctorId}/slots?date=${date}`, {
             headers: { Authorization: `Bearer ${user.token}` }
           });
           const data = await res.json();

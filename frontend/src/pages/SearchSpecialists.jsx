@@ -19,7 +19,7 @@ const SearchSpecialists = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/appointments/doctors');
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments/doctors`);
         const data = await response.json();
         setDoctors(data);
       } catch (error) {
@@ -44,7 +44,7 @@ const SearchSpecialists = () => {
     setBookingMsg('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/appointments', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/appointments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
