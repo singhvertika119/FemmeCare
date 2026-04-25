@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: femmecare_backend
+    ports:
+      - "5000:5000"
+    # Pass master variables safely into the daemon context natively mapping DB constraints
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    networks:
+      - femmecare_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: femmecare_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - femmecare_network
+
+networks:
+  femmecare_network:
+    driver: bridge
