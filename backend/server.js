@@ -9,8 +9,15 @@ connectDB();
 const app = express();
 
 // Init Middleware
-app.use(cors());
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || ['http://localhost:5173', 'http://localhost:80'],
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// Health Check for Render Sleep Wake
+app.get('/api/health', (req, res) => res.status(200).json({ status: 'ok', timestamp: new Date() }));
 
 // Define Routes
 app.use('/api/auth', require('./routes/authRoutes'));
